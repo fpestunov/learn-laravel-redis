@@ -19,3 +19,16 @@ Route::get('/', function () {
 
     return view('welcome')->withVisits($visits);
 });
+
+Route::get('video/{id}', function ($id) {
+    $downloads = Redis::get("videos.{$id}.downloads");
+    // var_dump($downloads);
+
+    return view('second')->withDownloads($downloads);
+});
+
+Route::get('video/{id}/download', function ($id) {
+    Redis::incr("videos.{$id}.downloads");
+    
+    return back();
+});

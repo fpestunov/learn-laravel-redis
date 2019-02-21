@@ -29,3 +29,15 @@ https://redis.io/commands/incr
 
 ## 2. Counters and Namespacing
 Okay okay, so a website visitor counter is a bit old-fashioned. But, if you think about it, we increment counters all over the place: your number of followers, the times a video has been downloaded, the number of articles you've favorited, etc. Let's review one example in this episode, while also taking time to discuss key name-spacing.
+
+Шаблоны. Шаблон для разных видео и как считать скачивания???
+videos.$id.download
+twitter.$name.watch
+...что хочешь, то и считаешь!!!
+
+CLI
+просмотр:
+KEYS videos.*
+
+## 3. Trending Articles with Sorted Sets
+You're going to love sorted sets. Think of them as unique arrays that automatically sort their items, according to a particular score that you define. You might sort the top scoring basketball teams, a forum leaderboard, or even the most popular video tutorials at Laracasts! When it comes to Redis, even two lines of code can accomplish so much.
