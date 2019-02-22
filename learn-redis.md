@@ -41,3 +41,78 @@ KEYS videos.*
 
 ## 3. Trending Articles with Sorted Sets
 You're going to love sorted sets. Think of them as unique arrays that automatically sort their items, according to a particular score that you define. You might sort the top scoring basketball teams, a forum leaderboard, or even the most popular video tutorials at Laracasts! When it comes to Redis, even two lines of code can accomplish so much.
+
+В Редисе разные типы данных. В ПХП мы работаем с массивами. А Редисе это списки - "L"(ist). Все команды начинаются с L.
+https://redis.io/commands#list
+
+Или Хэш - ассоциативные массивы.
+https://redis.io/commands#hash
+
+Или Sets - тоже что List, только содержит уникальные значения.
+1,2,3,4,5,1,2,4 => 1,2,3,4,5
+https://redis.io/commands#set
+
+Или Sorted Sets - отсортирован по Scores (как?)
+https://redis.io/commands#sorted_set
+
+Перейдем к практике, очистим базу данных:
+flushall
+
+Добавим информацию о нескольких статьях:
+zadd trending_articles 1 'learn-php'
+zadd trending_articles 1 'learn-html'
+zadd trending_articles 1 'learn-css'
+
+Какое общее количество?
+zcard trending_articles
+
+Как получить помощь по команде?
+help zcard
+
+Вывести список:
+zrange trending_articles 0 -1
+
+Вывести список WITHSCORES:
+zrange trending_articles 0 -1 WITHSCORES
+
+Вывести список WITHSCORES в обратном порядке - REV(erse):
+zrevrange trending_articles 0 -1 WITHSCORES
+
+Увеличить очки у элемента:
+zincrby trending_articles 1 learn-html
+
+Перейдем к программированию:
+- создадим модель и миграцию, добавим поля и отправим в БД
+php artisan make:model Article -mr
+
+- сосдадим Фэйкер для заполнения данными...
+
+- наполним базу данных статьями:
+php artisan tinker
+factory('App\Article', 10)->create()
+
+- проверим результат:
+App\Article::count()
+
+Work!
+
+Теперь напишем роут, вывод статьи:
+Route::get('articles/{article}', function (App\Article $article) {
+    return $article;
+});
+
+Статьи по номеру отдает. Теперь нам надо сделать, чтобы считались просмотры этих статей... и чтобы на отдельной странице отображались 3 популярные статьи.
+
+Код написан, очищаем память Редиса и начинаем тестировать.
+flushall
+
+Отлично, работает и возвращает массив id популярных статей.
+
+А как сделать вывод самих статей? Доработаем наши роуты... Используем App\Article::hydrate(). Готово. Работает.
+
+Вот еще - статей много, статистика накапливается, а нам надо всего - 3, 5, 10 лучших статей. ЗАчем нам хранить лишнее??
+
+Поможет: rem ('remove from range')
+Redis::zremrangebyrank('trending_articles', 0, -4);
+
+Готово, работает. Хотя для блогов это не обязательно, т.к. не съедает много ресурсов...

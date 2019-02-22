@@ -32,3 +32,23 @@ Route::get('video/{id}/download', function ($id) {
     
     return back();
 });
+
+Route::get('articles/trending', function () {
+    $trending = Redis::zrevrange('trending_articles', 0, 2);
+
+    $trending = App\Article::hydrate(
+        array_map('json_decode', $trending)
+    );
+    // dd($trending); // выводит коллекцию - массив объектов Article
+    return $trending; // выводит массив
+});
+
+Route::get('articles/{article}', function (App\Article $article) {
+    Redis::zincrby('trending_articles', 1, $article);
+    // Redis::zincrby('trending_articles', 1, $article->id);
+
+    // храним список лучших 3 статей
+    Redis::zremrangebyrank('trending_articles', 0, -4);
+    
+    return $article;
+});
