@@ -116,3 +116,58 @@ flushall
 Redis::zremrangebyrank('trending_articles', 0, -4);
 
 Готово, работает. Хотя для блогов это не обязательно, т.к. не съедает много ресурсов...
+
+## 4. Hashes and Caching
+https://redis.io/commands#hash
+
+Next up, let's review Redis' hash data type. Think of these as a Redis equivalent to PHP's associative array. When you need to associate a number of key-value pairs with a single key, this is the type you should reach for. Near the conclusion of this lesson, we'll also touch upon Laravel's Cache component, and how that fits in with our Redis review.
+
+Пример статистики пользователя:
+- пройдено курсов;
+- любимые темы;
+- и т.д.
+$user1stat = [
+    'favorites' => 50,
+    'watchLaters' => 80,
+    'completions' => 23,
+];
+
+Редис хороший вариант!
+H = "hashes"
+m = "multible"
+hset - только 'favorites' => 50
+hmset - весь массив - $user1$stat
+
+Запускаем `redis-cli`:
+help hmset
+hmset user.1.stats favorites 50 watchLaters 90 completions 25
+hget user.1.stats favorites
+// 50
+hgetall user.1.stats
+
+Выведем значения на странице:
+    return Redis::hgetall('user.1.stats')['favorites'];
+    return Redis::hgetall('user.1.stats');
+
+Добавим статистику по второму и третьему пользователю.
+И сделаем страницу статистики. Отлично!
+
+Так, а как нам увеличивать favorite-video? Создадим еще один роут 'favorite-video'.
+
+### Есть еще тема КЭШа - Laravel Cache
+https://laravel.com/docs/5.7/cache
+
+config/cache.php
+// Supported: "apc", "array", "database", "file", "memcached", "redis"
+// 'default' => env('CACHE_DRIVER', 'file'),
+
+правим это значение в файле `.env`
+
+префиксы ключей:
+laravel_cache
+
+Почему то не сработало?! не помещает ключи в Редис... :(
+а! нет в Redis Desctop Manager значения есть...
+
+
+

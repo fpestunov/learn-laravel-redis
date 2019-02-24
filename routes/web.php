@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,6 +20,42 @@ Route::get('/', function () {
 
     return view('welcome')->withVisits($visits);
 });
+
+Route::get('/hashes', function () {
+    $user3stat = [
+        'favorites' => 22,
+        'watchLaters' => 33,
+        'completions' => 11,
+    ];
+
+    Redis::hmset('user.3.stats', $user3stat);
+
+    return Redis::hgetall('user.3.stats');
+
+    // return Redis::hgetall('user.1.stats')['favorites'];
+    // return Redis::hgetall('user.1.stats');
+});
+
+Route::get('/users/{id}/stats', function ($id) {
+    // var_dump("user.{$id}.stats");
+    return Redis::hgetall("user.{$id}.stats");
+});
+
+Route::get('favorite-video', function () {
+    $id = 3; // Auth()->id();
+    
+    Redis::hincrby("user.{$id}.stats", 'favorites', 1);
+    return redirect("/users/{$id}/stats");
+});
+
+Route::get('lara-cache', function () {
+
+    // var_dump(env('CACHE_DRIVER', 'file'));
+    Cache::put('foo2', 'bars', 12);
+
+    return Cache::get('foo2');
+});
+
 
 Route::get('video/{id}', function ($id) {
     $downloads = Redis::get("videos.{$id}.downloads");
