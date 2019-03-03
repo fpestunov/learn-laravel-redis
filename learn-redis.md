@@ -171,3 +171,23 @@ laravel_cache
 
 
 
+## 5. Caching With Redis
+
+Caching, of course, is an incredible use-case for Redis. Whether you're caching database queries, API calls, or even HTML fragments, you'll get a lot of use out of the techniques within this episode. We'll begin by building up a custom remember function, before switching over to Laravel's Cache component.
+
+Все очищаем в роутах. И рассмотрим пример запросов наших статей. Каждый визит - это запрос к БД. А если блог обновляется 1 раз в неделю? Хороший пример для использования кэширования. Можно кэшировать запросы, фрагменты страниц и т.д.
+
+из - json_decode()
+в - json_encode()
+в - $articles->toJson()
+
+Тестируем - первое обращение записывает в кэш, а при следующих берет оттуда и в консоли Редиса мы видим данные:
+```
+get articles.all
+```
+
+Эта команда удаляет ключ:
+```
+del articles.all
+```
+
