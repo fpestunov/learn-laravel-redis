@@ -13,15 +13,20 @@ use Illuminate\Support\Str;
 |
 */
 
-Route::get('/', function () {
-
-    if ($value = Redis::exists('articles.all')) {
+function remember($key, $minutes, $callback) {
+    if ($value = Redis::get($key)) {
         return json_decode($value);
     }
 
-    $articles = App\Article::all();
+    Redis::setex($key, $minutes, json_encode($value = $callback()));
 
-    Redis::set('articles.all', $articles->toJson());
+    return $value;
 
-    return $articles;
+}
+
+Route::get('/', function () {
+
+    return remember('articles.all', 60 * 60, function () {
+        return App\Article::all();
+    });
 });
