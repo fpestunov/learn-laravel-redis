@@ -192,3 +192,17 @@ del articles.all
 ```
 
 Переделаем работу использую функцию `remember()`. Работает. Посмотрим, в Ларавеле все реализовано таким же образом! Переделаем на Ларавел лад.
+
+## 6. How to Structure Your Caching Layer
+
+Before we move on to learning about PubSub in Redis, let's take a short break to review how we might organize our PHP to best take advantage of caching. In the previous episode, we simply wrapped our database query in a call to Cache::remember(). But, what if we want to dry up our code a bit, or even turn the caching on and off (through the use of decorators), like the flick of a switch? In this episode, I'll demonstrate a few options that you might consider.
+
+Что если мы захотим использовать этот код в других местах?
+
+### i. вынесем функциональность в отдельный класс
+
+### ii. используя Декоратор, расширим возможности
+
+Одинаковый результат, но вторая строка более читаемая и предпочтительна:
+- dd(App::make('Articles'));
+- dd(resolve('Articles'));
